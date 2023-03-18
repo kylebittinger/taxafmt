@@ -1,0 +1,25 @@
+Package: taxafmt
+Type: Package
+Title: Format and parse taxonomic assignments
+Version: 0.1.0
+Authors@R:
+  person(
+    "Kyle", "Bittinger", email = "kylebittinger@gmail.com",
+    role = c("aut", "cre"))
+Description: Provides a few utilities for parsing and formatting taxonomic
+    assignments, especially for microbiome data.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    dplyr (>= 1.0.0),
+    stringr,
+    tibble,
+    tidyselect
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Depends: 
+    R (>= 2.10)
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3

@@ -1,0 +1,114 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+devtools::load_all()
+```
+
+# taxafmt
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of taxafmt is to format and parse taxonomic assignments, especially
+for microbiome data sets.
+
+## Installation
+
+You can install the development version of taxafmt like so:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("kylebittinger/taxafmt")
+```
+
+## Example
+
+The `taxafmt` package comes with a small data set of taxonomic assignments.
+
+```{r example}
+sprockett_taxa
+```
+
+Here, we'll show how to parse and format the assignments for use in plots or
+statistical comparisons. Our first goal is to split up the taxa into ranks,
+like family, genus, and species. The `split_lineage` function does this for us.
+
+```{r}
+split_lineage(sprockett_taxa$lineage)
+```
+
+That's okay, but we'd prefer to have the taxa lined up beside the Feature ID's.
+We can use the `tidyverse` for that.
+
+```{r message=FALSE}
+library(tidyverse)
+sprockett_taxa %>%
+  mutate(split_lineage(lineage))
+```
+
+In some taxonomic systems like this one, the taxa are given a one-letter prefix
+to indicate the rank. This is convenient, especially when we want to double
+check that the correct taxon is in each column, but it's too ugly to use in
+plots and reports. The funtion `remove_rank_prefix` will remove this prefix.
+
+```{r}
+sprockett_taxa %>%
+  mutate(split_lineage(lineage)) %>%
+  mutate(across(Kingdom:Species, remove_rank_prefix))
+```
+
+The species names are not quite right--they only contain the specific epithet,
+which is the second word of the species name. The first word in the species
+name is the genus. To generate real species names, we can use the function
+`make_binomial_name`.
+
+```{r}
+sprockett_taxa %>%
+  mutate(split_lineage(lineage)) %>%
+  mutate(across(Kingdom:Species, remove_rank_prefix)) %>%
+  mutate(Species = make_binomial_name(Genus, Species))
+```
+
+
+Finally, we'd like to create a shortened label for each taxonomic assignment,
+something that's nice to use in a plot or report. The function `format_taxa`
+does this. We give `format_taxa` a data frame of the taxa, and it generates
+labels using the lowest-ranking taxon in the data frame (which should be on
+the right hand side). If that taxon is `NA`, then we get a label containing
+the lowest-rank taxon that's available, but tagged to indicate that it's not
+classified all the way down.
+
+Even though we worked to tidy up the species names, we con't really trust
+species-level assignments for a data set like this. Therefore, we use the
+`pick` function from `dplyr` to select the taxa from `Kingdom` to `Genus`
+when making the labels.
+
+```{r}
+sprockett_taxa %>%
+  mutate(split_lineage(lineage)) %>%
+  mutate(across(Kingdom:Species, remove_rank_prefix)) %>%
+  mutate(Species = make_binomial_name(Genus, Species)) %>%
+  mutate(label = format_taxa(pick(Kingdom:Genus)))
+```
+
+Now, let's check out those labels.
+
+```{r}
+sprockett_taxa %>%
+  mutate(split_lineage(lineage)) %>%
+  mutate(across(Kingdom:Species, remove_rank_prefix)) %>%
+  mutate(Species = make_binomial_name(Genus, Species)) %>%
+  mutate(label = format_taxa(pick(Kingdom:Genus))) %>%
+  select(feature_id, label)
+```
+
