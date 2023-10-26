@@ -53,6 +53,12 @@ test_that("format_taxa works with no guide taxon", {
       "unclassified o__Clostridiales"))
 })
 
+test_that("format_taxa works with no assignment", {
+  expect_equal(
+    format_taxa(tibble::tibble(Kingdom = NA_character_, Phylum = NA_character_)),
+    "no assignment")
+})
+
 test_that("make_binomial_name works", {
   expect_equal(
     make_binomial_name(c("[Ruminococcus]", "Bacteroides"), c("gnavus", NA)),
@@ -71,7 +77,7 @@ test_that("format_lineage_vector works for unclassified taxa", {
   expect_equal(
     format_lineage_vector(c("a", NA, NA)), "unclassified a")
   expect_equal(
-    format_lineage_vector(c(NA_character_, NA_character_)), NA_character_)
+    format_lineage_vector(c(NA_character_, NA_character_)), "no assignment")
 })
 
 test_that("format_lineage_vector works without guide taxon", {

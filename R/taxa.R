@@ -66,7 +66,8 @@ make_binomial_name <- function (genus_name, specific_name) {
 #' @return A character vector of formatted taxonomic assignments.
 #' @export
 format_taxa <- function(taxdf, guide = "Phylum", sep = " - ",
-                        unclassified_prefix = "unclassified") {
+                        unclassified_prefix = "unclassified",
+                        all_unclassified = "no assignment") {
   if (is.null(guide) || is.na(guide)) {
     guide_idx <- NULL
   } else if (is.integer(guide)) {
@@ -76,14 +77,16 @@ format_taxa <- function(taxdf, guide = "Phylum", sep = " - ",
   }
   apply(
     taxdf, 1, format_lineage_vector, guide_idx = guide_idx, sep = sep,
-    unclassified_prefix = unclassified_prefix)
+    unclassified_prefix = unclassified_prefix,
+    all_unclassified = all_unclassified)
 }
 
 format_lineage_vector <- function (x, guide_idx = 2, sep = " - ",
-                                 unclassified_prefix = "unclassified") {
+                                 unclassified_prefix = "unclassified",
+                                 all_unclassified = "no assignment") {
   primary_idx <- max_idx(x)
-  # Nothing is filled in, return NA
-  if (is.na(primary_idx)) return(NA_character_)
+  # Nothing is filled in, return all_unclassified
+  if (is.na(primary_idx)) return(all_unclassified)
   primary_taxon <- x[primary_idx]
   # Add a prefix if necessary
   if ((primary_idx < length(x)) & (!is.null(unclassified_prefix))) {
