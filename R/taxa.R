@@ -79,7 +79,7 @@ format_taxa <- function(taxdf, guide = "Phylum", sep = " - ",
     unclassified_prefix = unclassified_prefix)
 }
 
-format_lineage_vector <- function (x, guide_idx, sep = " - ",
+format_lineage_vector <- function (x, guide_idx = 2, sep = " - ",
                                  unclassified_prefix = "unclassified") {
   primary_idx <- max_idx(x)
   # Nothing is filled in, return NA

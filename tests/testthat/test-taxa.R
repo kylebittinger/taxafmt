@@ -61,23 +61,17 @@ test_that("make_binomial_name works", {
 
 test_that("format_lineage_vector works for unclassified taxa", {
   expect_equal(
-    format_lineage_vector(c("a", "b", "c", "d"), guide_idx = 2),
-    "b - d")
+    format_lineage_vector(c("a", "b", "c", "d")), "b - d")
   expect_equal(
-    format_lineage_vector(c("a", "b", "c", "d", NA), guide_idx = 2),
-    "b - unclassified d")
+    format_lineage_vector(c("a", "b", "c", "d", NA)), "b - unclassified d")
   expect_equal(
-    format_lineage_vector(c("a", "b", "c", "d", NA, NA), guide_idx = 2),
-    "b - unclassified d")
+    format_lineage_vector(c("a", "b", "c", "d", NA, NA)), "b - unclassified d")
   expect_equal(
-    format_lineage_vector(c("a", "b", NA, NA), guide_idx = 2),
-    "unclassified b")
+    format_lineage_vector(c("a", "b", NA, NA)), "unclassified b")
   expect_equal(
-    format_lineage_vector(c("a", NA, NA), guide_idx = 2),
-    "unclassified a")
+    format_lineage_vector(c("a", NA, NA)), "unclassified a")
   expect_equal(
-    format_lineage_vector(c(NA_character_, NA_character_), guide_idx = 2),
-    NA_character_)
+    format_lineage_vector(c(NA_character_, NA_character_)), NA_character_)
 })
 
 test_that("format_lineage_vector works without guide taxon", {
