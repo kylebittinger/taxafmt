@@ -82,19 +82,15 @@ format_taxa <- function(taxdf, guide = "Phylum", sep = " - ",
 }
 
 format_lineage_vector <- function (x, guide_idx = 2, sep = " - ",
-                                 unclassified_prefix = "unclassified",
-                                 all_unclassified = "no assignment") {
+                                   unclassified_prefix = "unclassified",
+                                   all_unclassified = "no assignment") {
   primary_idx <- max_idx(x)
-  # Nothing is filled in, return all_unclassified
   if (is.na(primary_idx)) return(all_unclassified)
   primary_taxon <- x[primary_idx]
-  # Add a prefix if necessary
   if ((primary_idx < length(x)) & (!is.null(unclassified_prefix))) {
     primary_taxon <- paste(unclassified_prefix, primary_taxon)
   }
-  # No guide, return the lowest-ranking taxon
   if (is.null(guide_idx)) return(primary_taxon)
-  # Nothing is filled in below the guide, return the lowest-ranking taxon
   if (primary_idx <= guide_idx) return(primary_taxon)
   guide_taxon <- x[guide_idx]
   paste(guide_taxon, primary_taxon, sep = sep)
