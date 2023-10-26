@@ -78,14 +78,25 @@ format_taxa <- function(taxdf, guide = "Phylum", sep = " - ",
 
 format_lineage_vector <- function (x, guide_idx, sep = " - ",
                                  unclassified_prefix = "unclassified") {
-  primary_idx <- max(which(!is.na(x)))
-  if (primary_idx < guide_idx) return(paste(x, collapse = sep))
-  guide_taxon <- x[guide_idx]
-  if (primary_idx == guide_idx) return(guide_taxon)
+  primary_idx <- max_idx(x)
+  # Nothing is filled in, return NA
+  if (is.na(primary_idx)) return(NA_character_)
   primary_taxon <- x[primary_idx]
+  # Nothing is filled in below the guide, return the lowest-ranking taxon
+  if (primary_idx <= guide_idx) return(primary_taxon)
+  guide_taxon <- x[guide_idx]
+  # Add a prefix if necessary
   if ((primary_idx < length(x)) & (!is.null(unclassified_prefix))) {
-    prefixed <- paste(unclassified_prefix, primary_taxon)
-    return(paste(guide_taxon, prefixed, sep = sep))
+    primary_taxon <- paste(unclassified_prefix, primary_taxon)
   }
-  return(paste(guide_taxon, primary_taxon, sep = sep))
+  paste(guide_taxon, primary_taxon, sep = sep)
+}
+
+max_idx <- function (x) {
+  is_filled <- !is.na(x)
+  if (any(is_filled)) {
+    max(which(is_filled))
+  } else {
+    NA_integer_
+  }
 }
