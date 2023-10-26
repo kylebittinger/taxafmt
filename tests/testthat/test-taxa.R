@@ -12,10 +12,7 @@ taxa <- tibble::tibble(
   Genus = c("g__Enterococcus", NA_character_, NA_character_),
   Species = c(NA_character_, NA_character_, NA_character_))
 
-assignments <- c(
-  "p__Firmicutes - g__Enterococcus",
-  "p__Actinobacteria - unclassified f__Bifidobacteriaceae",
-  "p__Firmicutes - unclassified o__Clostridiales")
+assignments <-
 
 test_that("split_lineage works", {
   expect_equal(split_lineage(lineages), taxa)
@@ -39,7 +36,21 @@ test_that("remove_rank_prefix works for lineages", {
 })
 
 test_that("format_taxa works", {
-  expect_equal(format_taxa(taxa[, 1:6]), assignments) # Kingdom-Genus
+  expect_equal(
+    format_taxa(taxa[, 1:6]), # Kingdom-Genus
+    c(
+      "p__Firmicutes - g__Enterococcus",
+      "p__Actinobacteria - unclassified f__Bifidobacteriaceae",
+      "p__Firmicutes - unclassified o__Clostridiales"))
+})
+
+test_that("format_taxa works with no guide taxon", {
+  expect_equal(
+    format_taxa(taxa[, 1:6], guide = NULL),
+    c(
+      "g__Enterococcus",
+      "unclassified f__Bifidobacteriaceae",
+      "unclassified o__Clostridiales"))
 })
 
 test_that("make_binomial_name works", {
@@ -50,21 +61,25 @@ test_that("make_binomial_name works", {
 
 test_that("format_lineage_vector works for unclassified taxa", {
   expect_equal(
-    format_lineage_vector(c("a", "b", "c", "d"), 2),
+    format_lineage_vector(c("a", "b", "c", "d"), guide_idx = 2),
     "b - d")
   expect_equal(
-    format_lineage_vector(c("a", "b", "c", "d", NA), 2),
+    format_lineage_vector(c("a", "b", "c", "d", NA), guide_idx = 2),
     "b - unclassified d")
   expect_equal(
-    format_lineage_vector(c("a", "b", "c", "d", NA, NA), 2),
+    format_lineage_vector(c("a", "b", "c", "d", NA, NA), guide_idx = 2),
     "b - unclassified d")
   expect_equal(
-    format_lineage_vector(c("a", "b", NA, NA), 2),
-    "b")
+    format_lineage_vector(c("a", "b", NA, NA), guide_idx = 2),
+    "unclassified b")
   expect_equal(
-    format_lineage_vector(c("a", NA, NA), 2),
-    "a")
+    format_lineage_vector(c("a", NA, NA), guide_idx = 2),
+    "unclassified a")
   expect_equal(
-    format_lineage_vector(c(NA_character_, NA_character_), 2),
+    format_lineage_vector(c(NA_character_, NA_character_), guide_idx = 2),
     NA_character_)
+})
+
+test_that("format_lineage_vector works without guide taxon", {
+  expect_equal(format_lineage_vector(c("a", "b"), guide_idx = NULL), "b")
 })

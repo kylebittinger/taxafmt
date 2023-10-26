@@ -55,8 +55,9 @@ make_binomial_name <- function (genus_name, specific_name) {
 #' Format taxonomic assignments for presentation
 #'
 #' @param taxdf A data frame containing taxonomic assignments.
-#' @param guide Column name of high-ranking taxa to use as a guide
-#'   for lower-ranking taxa.
+#' @param guide Column name or column number of high-ranking taxa to use as a
+#'   guide for lower-ranking taxa. If guide is `NULL`, no guide taxon will be
+#'   used.
 #' @param sep Separator to use between guide taxon and lowest-ranking taxon.
 #' @param unclassified_prefix If the lowest-ranking taxon is `NA`, the function
 #'   will use the lowest-ranking taxon available. In this case, a prefix will
@@ -66,7 +67,9 @@ make_binomial_name <- function (genus_name, specific_name) {
 #' @export
 format_taxa <- function(taxdf, guide = "Phylum", sep = " - ",
                         unclassified_prefix = "unclassified") {
-  if (is.integer(guide)) {
+  if (is.null(guide) || is.na(guide)) {
+    guide_idx <- NULL
+  } else if (is.integer(guide)) {
     guide_idx <- guide
   } else {
     guide_idx <- match(guide, colnames(taxdf))
@@ -82,13 +85,15 @@ format_lineage_vector <- function (x, guide_idx, sep = " - ",
   # Nothing is filled in, return NA
   if (is.na(primary_idx)) return(NA_character_)
   primary_taxon <- x[primary_idx]
-  # Nothing is filled in below the guide, return the lowest-ranking taxon
-  if (primary_idx <= guide_idx) return(primary_taxon)
-  guide_taxon <- x[guide_idx]
   # Add a prefix if necessary
   if ((primary_idx < length(x)) & (!is.null(unclassified_prefix))) {
     primary_taxon <- paste(unclassified_prefix, primary_taxon)
   }
+  # No guide, return the lowest-ranking taxon
+  if (is.null(guide_idx)) return(primary_taxon)
+  # Nothing is filled in below the guide, return the lowest-ranking taxon
+  if (primary_idx <= guide_idx) return(primary_taxon)
+  guide_taxon <- x[guide_idx]
   paste(guide_taxon, primary_taxon, sep = sep)
 }
 
