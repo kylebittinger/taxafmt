@@ -67,7 +67,7 @@ Feature ID’s. We can use the `tidyverse` for that.
 
 ``` r
 library(tidyverse)
-sprockett_taxa %>%
+sprockett_taxa |>
   mutate(split_lineage(lineage))
 #> # A tibble: 10 × 9
 #>    feature_id lineage            Kingdom Phylum Class Order Family Genus Species
@@ -87,12 +87,12 @@ sprockett_taxa %>%
 In some taxonomic systems like this one, the taxa are given a one-letter
 prefix to indicate the rank. This is convenient, especially when we want
 to double check that the correct taxon is in each column, but it’s too
-ugly to use in plots and reports. The funtion `remove_rank_prefix` will
+ugly to use in plots and reports. The function `remove_rank_prefix` will
 remove this prefix.
 
 ``` r
-sprockett_taxa %>%
-  mutate(split_lineage(lineage)) %>%
+sprockett_taxa |>
+  mutate(split_lineage(lineage)) |>
   mutate(across(Kingdom:Species, remove_rank_prefix))
 #> # A tibble: 10 × 9
 #>    feature_id lineage            Kingdom Phylum Class Order Family Genus Species
@@ -115,9 +115,9 @@ the species name is the genus. To generate real species names, we can
 use the function `make_binomial_name`.
 
 ``` r
-sprockett_taxa %>%
-  mutate(split_lineage(lineage)) %>%
-  mutate(across(Kingdom:Species, remove_rank_prefix)) %>%
+sprockett_taxa |>
+  mutate(split_lineage(lineage)) |>
+  mutate(across(Kingdom:Species, remove_rank_prefix)) |>
   mutate(Species = make_binomial_name(Genus, Species))
 #> # A tibble: 10 × 9
 #>    feature_id lineage            Kingdom Phylum Class Order Family Genus Species
@@ -143,16 +143,16 @@ data frame (which should be on the right hand side). If that taxon is
 available, but tagged to indicate that it’s not classified all the way
 down.
 
-Even though we worked to tidy up the species names, we con’t really
+Even though we worked to tidy up the species names, we can’t really
 trust species-level assignments for a data set like this. Therefore, we
 use the `pick` function from `dplyr` to select the taxa from `Kingdom`
 to `Genus` when making the labels.
 
 ``` r
-sprockett_taxa %>%
-  mutate(split_lineage(lineage)) %>%
-  mutate(across(Kingdom:Species, remove_rank_prefix)) %>%
-  mutate(Species = make_binomial_name(Genus, Species)) %>%
+sprockett_taxa |>
+  mutate(split_lineage(lineage)) |>
+  mutate(across(Kingdom:Species, remove_rank_prefix)) |>
+  mutate(Species = make_binomial_name(Genus, Species)) |>
   mutate(label = format_taxa(pick(Kingdom:Genus)))
 #> # A tibble: 10 × 10
 #>    feature_id lineage      Kingdom Phylum Class Order Family Genus Species label
@@ -172,11 +172,11 @@ sprockett_taxa %>%
 Now, let’s check out those labels.
 
 ``` r
-sprockett_taxa %>%
-  mutate(split_lineage(lineage)) %>%
-  mutate(across(Kingdom:Species, remove_rank_prefix)) %>%
-  mutate(Species = make_binomial_name(Genus, Species)) %>%
-  mutate(label = format_taxa(pick(Kingdom:Genus))) %>%
+sprockett_taxa |>
+  mutate(split_lineage(lineage)) |>
+  mutate(across(Kingdom:Species, remove_rank_prefix)) |>
+  mutate(Species = make_binomial_name(Genus, Species)) |>
+  mutate(label = format_taxa(pick(Kingdom:Genus))) |>
   select(feature_id, label)
 #> # A tibble: 10 × 2
 #>    feature_id label                                           
