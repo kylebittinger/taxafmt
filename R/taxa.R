@@ -71,22 +71,21 @@ format_taxa <- function(taxdf, guide = "Phylum", sep = " - ",
   } else {
     guide_idx <- match(guide, colnames(taxdf))
   }
-  apply(taxdf, 1, function (x) {
-    n_total <- length(x)
-    n_filled <- filled_length(x)
-    if (n_filled < guide_idx) return(paste(x, collapse = sep))
-    guide_taxon <- x[guide_idx]
-    if (n_filled == guide_idx) return(guide_taxon)
-    lowest_taxon <- x[n_filled]
-    if ((n_filled < n_total) & (!is.null(unclassified_prefix))) {
-      prefixed <- paste(unclassified_prefix, lowest_taxon)
-      return(paste(guide_taxon, prefixed, sep = sep))
-    }
-    return(paste(guide_taxon, lowest_taxon, sep = sep))
-  })
+  apply(
+    taxdf, 1, format_lineage_vector, guide_idx = guide_idx, sep = sep,
+    unclassified_prefix = unclassified_prefix)
 }
 
-filled_length <- function (x) {
-  n_empty <- match(TRUE, cumsum(is.na(rev(x))) > 0, nomatch = 0)
-  length(x) - n_empty
+format_lineage_vector <- function (x, guide_idx, sep = " - ",
+                                 unclassified_prefix = "unclassified") {
+  primary_idx <- max(which(!is.na(x)))
+  if (primary_idx < guide_idx) return(paste(x, collapse = sep))
+  guide_taxon <- x[guide_idx]
+  if (primary_idx == guide_idx) return(guide_taxon)
+  primary_taxon <- x[primary_idx]
+  if ((primary_idx < length(x)) & (!is.null(unclassified_prefix))) {
+    prefixed <- paste(unclassified_prefix, primary_taxon)
+    return(paste(guide_taxon, prefixed, sep = sep))
+  }
+  return(paste(guide_taxon, primary_taxon, sep = sep))
 }

@@ -47,3 +47,15 @@ test_that("make_binomial_name works", {
     make_binomial_name(c("[Ruminococcus]", "Bacteroides"), c("gnavus", NA)),
     c("[Ruminococcus] gnavus", NA))
 })
+
+test_that("format_lineage_vector works", {
+  expect_equal(
+    format_lineage_vector(c("a", "b", "c", "d"), 2),
+    "b - d")
+  expect_equal(format_lineage_vector(
+    c("a", "b", "c", "d", NA), 2),
+    "b - unclassified d")
+  expect_equal(format_lineage_vector(
+    c("a", "b", "c", "d", NA, NA), 2),
+    "b - unclassified d")
+})
