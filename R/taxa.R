@@ -55,38 +55,54 @@ make_binomial_name <- function (genus_name, specific_name) {
 #' Format taxonomic assignments for presentation
 #'
 #' @param taxdf A data frame containing taxonomic assignments.
-#' @param guide Column name of high-ranking taxa to use as a guide
-#'   for lower-ranking taxa.
+#' @param guide Column name or column number of high-ranking taxa to use as a
+#'   guide for lower-ranking taxa. If guide is `NULL`, no guide taxon will be
+#'   used.
 #' @param sep Separator to use between guide taxon and lowest-ranking taxon.
 #' @param unclassified_prefix If the lowest-ranking taxon is `NA`, the function
 #'   will use the lowest-ranking taxon available. In this case, a prefix will
 #'   be added indicate that the lowest-ranking taxon was undetermined. If
 #'   unclassified_prefix is `NULL`, no prefix will be added.
+#' @param all_unclassified If all the taxa are `NA`, this value will be used in
+#'   the result.
 #' @return A character vector of formatted taxonomic assignments.
 #' @export
 format_taxa <- function(taxdf, guide = "Phylum", sep = " - ",
-                        unclassified_prefix = "unclassified") {
-  if (is.integer(guide)) {
+                        unclassified_prefix = "unclassified",
+                        all_unclassified = "no assignment") {
+  if (is.null(guide) || is.na(guide)) {
+    guide_idx <- NULL
+  } else if (is.integer(guide)) {
     guide_idx <- guide
   } else {
     guide_idx <- match(guide, colnames(taxdf))
   }
-  apply(taxdf, 1, function (x) {
-    n_total <- length(x)
-    n_filled <- filled_length(x)
-    if (n_filled < guide_idx) return(paste(x, collapse = sep))
-    guide_taxon <- x[guide_idx]
-    if (n_filled == guide_idx) return(guide_taxon)
-    lowest_taxon <- x[n_filled]
-    if ((n_filled < n_total) & (!is.null(unclassified_prefix))) {
-      prefixed <- paste(unclassified_prefix, lowest_taxon)
-      return(paste(guide_taxon, prefixed, sep = sep))
-    }
-    return(paste(guide_taxon, lowest_taxon, sep = sep))
-  })
+  apply(
+    taxdf, 1, format_lineage_vector, guide_idx = guide_idx, sep = sep,
+    unclassified_prefix = unclassified_prefix,
+    all_unclassified = all_unclassified)
 }
 
-filled_length <- function (x) {
-  n_empty <- match(TRUE, cumsum(is.na(rev(x))) > 0, nomatch = 0)
-  length(x) - n_empty
+format_lineage_vector <- function (x, guide_idx = 2, sep = " - ",
+                                   unclassified_prefix = "unclassified",
+                                   all_unclassified = "no assignment") {
+  primary_idx <- max_idx(x)
+  if (is.na(primary_idx)) return(all_unclassified)
+  primary_taxon <- x[primary_idx]
+  if ((primary_idx < length(x)) & (!is.null(unclassified_prefix))) {
+    primary_taxon <- paste(unclassified_prefix, primary_taxon)
+  }
+  if (is.null(guide_idx)) return(primary_taxon)
+  if (primary_idx <= guide_idx) return(primary_taxon)
+  guide_taxon <- x[guide_idx]
+  paste(guide_taxon, primary_taxon, sep = sep)
+}
+
+max_idx <- function (x) {
+  is_filled <- !is.na(x)
+  if (any(is_filled)) {
+    max(which(is_filled))
+  } else {
+    NA_integer_
+  }
 }
