@@ -8,14 +8,16 @@ format_taxa(
   taxdf,
   guide = "Phylum",
   sep = " - ",
-  unclassified_prefix = "unclassified"
+  unclassified_prefix = "unclassified",
+  all_unclassified = "no assignment"
 )
 }
 \arguments{
 \item{taxdf}{A data frame containing taxonomic assignments.}
 
-\item{guide}{Column name of high-ranking taxa to use as a guide
-for lower-ranking taxa.}
+\item{guide}{Column name or column number of high-ranking taxa to use as a
+guide for lower-ranking taxa. If guide is \code{NULL}, no guide taxon will be
+used.}
 
 \item{sep}{Separator to use between guide taxon and lowest-ranking taxon.}
 
@@ -23,6 +25,9 @@ for lower-ranking taxa.}
 will use the lowest-ranking taxon available. In this case, a prefix will
 be added indicate that the lowest-ranking taxon was undetermined. If
 unclassified_prefix is \code{NULL}, no prefix will be added.}
+
+\item{all_unclassified}{If all the taxa are \code{NA}, this value will be used in
+the result.}
 }
 \value{
 A character vector of formatted taxonomic assignments.

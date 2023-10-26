@@ -63,6 +63,8 @@ make_binomial_name <- function (genus_name, specific_name) {
 #'   will use the lowest-ranking taxon available. In this case, a prefix will
 #'   be added indicate that the lowest-ranking taxon was undetermined. If
 #'   unclassified_prefix is `NULL`, no prefix will be added.
+#' @param all_unclassified If all the taxa are `NA`, this value will be used in
+#'   the result.
 #' @return A character vector of formatted taxonomic assignments.
 #' @export
 format_taxa <- function(taxdf, guide = "Phylum", sep = " - ",
