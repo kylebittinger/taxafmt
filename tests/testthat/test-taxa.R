@@ -38,7 +38,7 @@ test_that("remove_rank_prefix works for lineages", {
       "Bacteria; Firmicutes; Clostridia; Clostridiales"))
 })
 
-test_that("simplify_assignments works", {
+test_that("format_taxa works", {
   expect_equal(format_taxa(taxa[, 1:6]), assignments) # Kingdom-Genus
 })
 
