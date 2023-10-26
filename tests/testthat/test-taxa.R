@@ -48,14 +48,23 @@ test_that("make_binomial_name works", {
     c("[Ruminococcus] gnavus", NA))
 })
 
-test_that("format_lineage_vector works", {
+test_that("format_lineage_vector works for unclassified taxa", {
   expect_equal(
     format_lineage_vector(c("a", "b", "c", "d"), 2),
     "b - d")
-  expect_equal(format_lineage_vector(
-    c("a", "b", "c", "d", NA), 2),
+  expect_equal(
+    format_lineage_vector(c("a", "b", "c", "d", NA), 2),
     "b - unclassified d")
-  expect_equal(format_lineage_vector(
-    c("a", "b", "c", "d", NA, NA), 2),
+  expect_equal(
+    format_lineage_vector(c("a", "b", "c", "d", NA, NA), 2),
     "b - unclassified d")
+  expect_equal(
+    format_lineage_vector(c("a", "b", NA, NA), 2),
+    "b")
+  expect_equal(
+    format_lineage_vector(c("a", NA, NA), 2),
+    "a")
+  expect_equal(
+    format_lineage_vector(c(NA_character_, NA_character_), 2),
+    NA_character_)
 })
