@@ -14,9 +14,9 @@ taxonomic_ranks <- c(
 #' @export
 split_lineage <- function (lineage, pattern = "; ", ranks = taxonomic_ranks) {
   lineage <- as.character(lineage) # Just in case it is a factor
-  nranks <- length(taxonomic_ranks)
+  nranks <- length(ranks)
   result <- stringr::str_split_fixed(lineage, pattern, n = nranks)
-  colnames(result) <- taxonomic_ranks
+  colnames(result) <- ranks
   result <- tibble::as_tibble(result)
   result <- dplyr::mutate(result, dplyr::across(tidyselect::everything(), na_if_empty))
   result
