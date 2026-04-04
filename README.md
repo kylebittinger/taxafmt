@@ -4,6 +4,8 @@
 # taxafmt
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/kylebittinger/taxafmt/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/kylebittinger/taxafmt/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of taxafmt is to format and parse taxonomic assignments,
