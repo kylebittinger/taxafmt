@@ -2,7 +2,14 @@
 #'
 #' @export
 taxonomic_ranks <- c(
-  "Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
+  "Kingdom",
+  "Phylum",
+  "Class",
+  "Order",
+  "Family",
+  "Genus",
+  "Species"
+)
 
 #' Split lineages into taxa
 #'
@@ -12,17 +19,20 @@ taxonomic_ranks <- c(
 #'   resultant data frame.
 #' @return A data frame of taxonomic assignments.
 #' @export
-split_lineage <- function (lineage, pattern = "; ", ranks = taxonomic_ranks) {
+split_lineage <- function(lineage, pattern = "; ", ranks = taxonomic_ranks) {
   lineage <- as.character(lineage) # Just in case it is a factor
   nranks <- length(ranks)
   result <- stringr::str_split_fixed(lineage, pattern, n = nranks)
   colnames(result) <- ranks
   result <- tibble::as_tibble(result)
-  result <- dplyr::mutate(result, dplyr::across(tidyselect::everything(), na_if_empty))
+  result <- dplyr::mutate(
+    result,
+    dplyr::across(tidyselect::everything(), na_if_empty)
+  )
   result
 }
 
-na_if_empty <- function (x) {
+na_if_empty <- function(x) {
   x[x %in% ""] <- NA_character_
   x
 }
@@ -33,7 +43,7 @@ na_if_empty <- function (x) {
 #' @param pattern Regular expression for rank-specific prefix
 #' @return Character vector with prefixes removed
 #' @export
-remove_rank_prefix <- function (x, pattern = "[kpcofgs]__") {
+remove_rank_prefix <- function(x, pattern = "[kpcofgs]__") {
   x <- stringr::str_remove_all(x, pattern)
   dplyr::if_else(x %in% "", NA_character_, x)
 }
@@ -46,10 +56,12 @@ remove_rank_prefix <- function (x, pattern = "[kpcofgs]__") {
 #'   name in binomial nomenclature.
 #' @return The binomial species name.
 #' @export
-make_binomial_name <- function (genus_name, specific_name) {
+make_binomial_name <- function(genus_name, specific_name) {
   dplyr::if_else(
-    is.na(genus_name) | is.na(specific_name), NA_character_,
-    paste(genus_name, specific_name))
+    is.na(genus_name) | is.na(specific_name),
+    NA_character_,
+    paste(genus_name, specific_name)
+  )
 }
 
 #' Format taxonomic assignments for presentation
@@ -67,9 +79,13 @@ make_binomial_name <- function (genus_name, specific_name) {
 #'   the result.
 #' @return A character vector of formatted taxonomic assignments.
 #' @export
-format_taxa <- function(taxdf, guide = "Phylum", sep = " - ",
-                        unclassified_prefix = "unclassified",
-                        all_unclassified = "no assignment") {
+format_taxa <- function(
+  taxdf,
+  guide = "Phylum",
+  sep = " - ",
+  unclassified_prefix = "unclassified",
+  all_unclassified = "no assignment"
+) {
   if (is.null(guide) || is.na(guide)) {
     guide_idx <- NULL
   } else if (is.integer(guide)) {
@@ -78,27 +94,42 @@ format_taxa <- function(taxdf, guide = "Phylum", sep = " - ",
     guide_idx <- match(guide, colnames(taxdf))
   }
   apply(
-    taxdf, 1, format_lineage_vector, guide_idx = guide_idx, sep = sep,
+    taxdf,
+    1,
+    format_lineage_vector,
+    guide_idx = guide_idx,
+    sep = sep,
     unclassified_prefix = unclassified_prefix,
-    all_unclassified = all_unclassified)
+    all_unclassified = all_unclassified
+  )
 }
 
-format_lineage_vector <- function (x, guide_idx = 2, sep = " - ",
-                                   unclassified_prefix = "unclassified",
-                                   all_unclassified = "no assignment") {
+format_lineage_vector <- function(
+  x,
+  guide_idx = 2,
+  sep = " - ",
+  unclassified_prefix = "unclassified",
+  all_unclassified = "no assignment"
+) {
   primary_idx <- max_idx(x)
-  if (is.na(primary_idx)) return(all_unclassified)
+  if (is.na(primary_idx)) {
+    return(all_unclassified)
+  }
   primary_taxon <- x[primary_idx]
-  if ((primary_idx < length(x)) & (!is.null(unclassified_prefix))) {
+  if ((primary_idx < length(x)) && (!is.null(unclassified_prefix))) {
     primary_taxon <- paste(unclassified_prefix, primary_taxon)
   }
-  if (is.null(guide_idx)) return(primary_taxon)
-  if (primary_idx <= guide_idx) return(primary_taxon)
+  if (is.null(guide_idx)) {
+    return(primary_taxon)
+  }
+  if (primary_idx <= guide_idx) {
+    return(primary_taxon)
+  }
   guide_taxon <- x[guide_idx]
   paste(guide_taxon, primary_taxon, sep = sep)
 }
 
-max_idx <- function (x) {
+max_idx <- function(x) {
   is_filled <- !is.na(x)
   if (any(is_filled)) {
     max(which(is_filled))
